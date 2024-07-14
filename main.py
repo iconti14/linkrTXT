@@ -2,9 +2,8 @@
 
 import asyncio
 import os
-import random
+import random 
 
-from keep_alive import keep_alive
 from discord.ext import commands
 from dotenv import load_dotenv
 import discord
@@ -95,6 +94,5 @@ async def on_message_edit(messageBefore, messageAfter):
 
 if TOKEN is None:
     print("DISCORD_TOKEN environment variable is not set. Please set it.")
-else:
-    keep_alive()
+else: 
     bot.run(TOKEN)
