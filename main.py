@@ -3,6 +3,7 @@
 import asyncio
 import os
 import random 
+import json
 
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -18,6 +19,11 @@ channel = (bot.get_channel(1261803363729674251)
 
 pictureFolderNames = ["gay", "snowball"]
 
+with open("configs/messages.json", encoding="utf-8") as fh:
+    bot_messages = json.load(fh)
+
+with open("configs/commands.json", encoding="utf-8") as fh:
+    bot_commands = json.load(fh)
 
 def select_image(folderName: str):
     """
@@ -32,6 +38,9 @@ def select_image(folderName: str):
 
     if folderName not in pictureFolderNames:
         return None
+
+    if folderName == "list":
+        return "list"
 
     listofAvailablePics = os.listdir(pathToPhotos)
     return os.path.join(
@@ -54,38 +63,44 @@ async def on_message(message):
     # I couldn't get commands to work, so this will do for now
     if message.content.startswith('$'):
         text = message.content.split("$")
+        spaceSplit = text[1].split(" ")
 
-        if text[1] == "hello":
-            await message.reply('Hello!')
+        if spaceSplit[0] in bot_commands.keys():
 
-        if text[1].startswith("sendpic "):
-            sendPicSplit = text[1].split(" ")
-            if sendPicSplit[1] == "list":
-                await message.reply(
-                    "List of folders is: {}".format(pictureFolderNames))
-            else:
-                selectImage = select_image(sendPicSplit[1])
-                if selectImage is None:
+            # reply functionality
+            if bot_commands[spaceSplit[0]]["func"] == "reply":
+                await message.reply(bot_commands[spaceSplit[0]]["reply"])
+            
+            # Sendpic functionality
+            elif bot_commands[spaceSplit[0]]["func"] == "sendpic":
+                selectImage = select_image(spaceSplit[1])
+                if selectImage == None:
                     await message.reply("That's not an option, idiot 😡")
-                else:
+                elif selectImage[0] == "list":
+                    await message.reply(
+                        "List of folders is: {}".format(pictureFolderNames))    
+                elif type(selectImage[0]) == str:
                     await message.reply("Here is a {} picture".format(
-                        sendPicSplit[1]),
-                                        file=discord.File(selectImage))
+                            spaceSplit[1]),file=discord.File(selectImage))
 
     # These are not commands, just silly things
-    elif "thank" in message.content:
-        await message.reply("You're welcome ❤️")
+    for key in bot_messages.keys():
+        if key in message.content:
+            falseTrigger = True
+            if "special" not in bot_messages[key]:
+                falseTrigger = False
+            elif bot_messages[key]["special"] == "endswith":
+                if message.content[-1] == key:
+                    falseTrigger = False
 
-    elif "ur mom" in message.content:
-        await message.reply(file=discord.File('pics/gay/mom_gay.png'))
-
-    elif "fuck you" in message.content:
-        await message.add_reaction("😡")
-        await message.add_reaction("🖕")
-
-    elif message.content[-1] == "*":
-        await message.reply("Ha ha! You can't spell, idiot")
-
+            if not falseTrigger:
+                if bot_messages[key]["type"] == "message":
+                    await message.reply(bot_messages[key]["reply"])
+                elif bot_messages[key]["type"] == "image":
+                    await message.reply(file=discord.File(bot_messages[key]["imagePath"]))
+                elif bot_messages[key]["type"] == "reactions":
+                    for value in bot_messages[key]["reactions"]:
+                        await message.add_reaction(value)
 
 @bot.event
 async def on_message_edit(messageBefore, messageAfter):

@@ -1,0 +1,9 @@
+{
+    "hello": {
+        "func": "reply",
+        "reply": "Hello!"
+    },
+    "sendpic": {
+        "func": "sendpic"
+    }
+}

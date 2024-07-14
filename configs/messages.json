@@ -1,0 +1,23 @@
+{
+    "thank": {
+        "type": "message",
+        "message": "thank",
+        "reply": "You're welcome ❤️"
+    },
+    "*": {
+        "type": "message",
+        "message": "*",
+        "reply": "Ha ha! You can't spell, idiot",
+        "special": "endswith"
+    },
+    "ur mom":{
+        "type": "image",
+        "message": "ur mom",
+        "imagePath": "pics/gay/mom_gay.png"
+    },
+    "fuck you": {
+        "type": "react",
+        "message": "fuck you",
+        "reactions": ["😡","🖕"]
+    }
+}
