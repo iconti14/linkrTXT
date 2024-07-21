@@ -17,7 +17,7 @@ channel = None
 channel = (bot.get_channel(1261803363729674251)
            or bot.fetch_channel(1261803363729674251))
 
-pictureFolderNames = ["gay", "snowball"]
+pictureFolderNames = os.listdir("pics")
 
 with open("configs/messages.json", encoding="utf-8") as fh:
     bot_messages = json.load(fh)
