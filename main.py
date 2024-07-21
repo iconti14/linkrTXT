@@ -46,7 +46,7 @@ def select_image(folderName: str):
     listofAvailablePics = os.listdir(pathToPhotos)
     return os.path.join(
         pathToPhotos,
-        listofAvailablePics[random.randint(0, len(listofAvailablePics))])
+        listofAvailablePics[random.randint(0, len(listofAvailablePics)-1)])
 
 
 @bot.event
